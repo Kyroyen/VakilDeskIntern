@@ -13,9 +13,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-rh22es-a5grqm38%17++$+77rk6c1ioe@ed@@i@6itp1k4egq&'
 
-DEBUG = True
+DEBUG = bool(os.environ.get("DEBUG", True))
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost *").split(" ")
 
 
 # Application definition
@@ -69,9 +69,9 @@ WSGI_APPLICATION = 'scrapingsite.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'scrape',
-        'USER': 'root',
-        'PASSWORD': 'root',
+        'NAME': os.environ.get("PG_DB", "postgres"),
+        'USER': os.environ.get("PG_USER", "postgres"),
+        'PASSWORD': os.environ.get("PG_PASSWORD", "postgres"),
         'HOST': 'localhost',
         'PORT': '5432',
     }
