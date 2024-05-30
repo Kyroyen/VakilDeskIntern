@@ -7,3 +7,4 @@ project outline/*
 */credentials.json
 .env
 *.log
+scrapingsite/static*
