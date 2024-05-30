@@ -83,6 +83,8 @@ Firstly git clone the project to the local machine.
   - For the link https://www.scrapethissite.com/pages/ajax-javascript/#2015:
 
     all the table data is stored and persisted and thereafter retrived
+
+    **API ENDPOINT** : http://localhost:8000/oscar-films/
     
     ![image](https://github.com/Kyroyen/VakilDeskIntern/assets/70828054/e3c0cebf-2093-4529-ae7b-41c75b1500e2)
 
@@ -90,11 +92,15 @@ Firstly git clone the project to the local machine.
     
     all the table data is stored and persisted and thereafter retrived
 
+    **API ENDPOINT** : http://localhost:8000/hockey-teams/
+
     ![image](https://github.com/Kyroyen/VakilDeskIntern/assets/70828054/fc9a59be-43ad-401b-aeec-8a72e801c373)
 
   - for link https://www.scrapethissite.com/pages/advanced/
 
     Since it is a one off request, only success and failure of request is returned by the API, although data is still persisted
+
+    **API ENDPOINT** : http://localhost:8000/advanced-header/
 
     ![image](https://github.com/Kyroyen/VakilDeskIntern/assets/70828054/c158f5c6-444e-45df-b396-362d94f76307)
 
@@ -109,6 +115,7 @@ Firstly git clone the project to the local machine.
  - Readability : Code is written according to PEP 8 standard.
  - Modularity : Code is broken into indepentently functioning modules with consideration of low coupling and high cohesion among them.
  - Maintainibility : Code is maintainable with focus on easy changes in case of changes to the website structure such as headings, table tags etc.
+ - Object Based approach for API is followed.
 
 ## Error Handling
   With Robust error handling such as requests timeouts, decoding error, inconsistencies in data.
@@ -118,8 +125,9 @@ Firstly git clone the project to the local machine.
 
 ## Data Persistence
   Data is persisted using PostgreSQL using Django ORM.
-  - Sleep of 2 sec after every database insertion to avoid blocking the database
+  - Threaf sleep after every database insertion to avoid blocking the database
   - Collected data having high schema integrity would lead to better quality of analytics
+  - ORM uses 3 models to store scraped data i.e. OscarFilms, HockeyTeams, HeaderSpoofResponse
 
 ## Performance Optimisation
   Performance is optimised with using Celery and Redis. Celery's ```@shared_tasks``` offload the resource heavy scraping tasks to the celery tasks queue, where they are executed without disturbing the main wsgi server.
