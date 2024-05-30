@@ -20,3 +20,9 @@ class OscarFilms(models.Model):
     awards = models.IntegerField(null=True, blank=True)
     best_picture = models.BooleanField(default=False, null=True, blank=True)
     year = models.IntegerField(null=True, blank=True)
+
+
+class HeaderSpoofResponse(models.Model):
+
+    time = models.TimeField(auto_now=True)
+    response = models.BooleanField(null=True, blank=True)   

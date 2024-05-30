@@ -4,16 +4,13 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+LOG_FILENAME = "scraping_logging.log"
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-rh22es-a5grqm38%17++$+77rk6c1ioe@ed@@i@6itp1k4egq&'
 
-DEBUG = bool(os.environ.get("DEBUG", True))
+DEBUG = os.environ.get("DEBUG", True)==1
 
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost *").split(" ")
 
@@ -69,9 +66,9 @@ WSGI_APPLICATION = 'scrapingsite.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'USER': os.environ.get('PG_USER','postgres'),
-        'PASSWORD':os.environ.get('PG_PASSWORD','postgres'),
-        'NAME': os.environ.get('PG_DB','postgres'),
+        'USER': os.environ.get('PG_USER','root'),
+        'PASSWORD':os.environ.get('PG_PASSWORD','root'),
+        'NAME': os.environ.get('PG_DB','scrape'),
         'PORT': os.environ.get('PG_PORT','5432'),
         'HOST': os.environ.get('PG_HOST','localhost'),
     }

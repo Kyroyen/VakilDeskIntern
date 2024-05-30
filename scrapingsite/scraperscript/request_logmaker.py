@@ -3,7 +3,7 @@ import requests
 from requests import exceptions
 
 LOG_FILENAME = "scraping_logging.log"
-logging.basicConfig(filename=LOG_FILENAME, level=logging.ERROR)
+logging.basicConfig(filename=LOG_FILENAME, level=logging.DEBUG)
 
 def make_request(url, *args, **kwargs):
     try:

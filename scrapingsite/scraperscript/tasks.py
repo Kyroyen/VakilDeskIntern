@@ -2,19 +2,19 @@ from bs4 import BeautifulSoup
 import requests
 from requests.exceptions import HTTPError, JSONDecodeError
 import logging
-from time import sleep
 from celery import shared_task
+from django.conf import settings
 
 from .request_logmaker import make_request
-from .models import OscarFilms, HockeyTeams
+from .models import OscarFilms, HockeyTeams, HeaderSpoofResponse
 from .heading_map import heading_mapper
+from .single_event_scraper import hockey_single_scraper, single_oscar_page_scraper
 
-LOG_FILENAME = "scraping_logging.log"
+LOG_FILENAME = settings.LOG_FILENAME
 logging.basicConfig(filename=LOG_FILENAME, level=logging.DEBUG)
 
 # enhancing the modularity
 base_url = "https://www.scrapethissite.com/"
-
 
 @shared_task
 def hockey_scraper():
@@ -59,60 +59,7 @@ def hockey_scraper():
         # iterating through every url from pagination
         for page_url in paginated_urls:
 
-            curr_pageurl = base_url + page_url
-
-            # using "make_request" it to log the errors but not fail completely
-            page_to_scrape = make_request(
-                curr_pageurl
-            )
-
-            try:
-
-                soup = BeautifulSoup(
-                    page_to_scrape.text,  # type: ignore
-                    "html5lib"
-                )
-
-                rows = soup.find(
-                    "table"
-                ).find_all(  # type: ignore
-                    "tr"
-                )
-
-                # remove the first element which is the current page
-                headings = [
-                    i.text.strip() for i in rows.pop(0).find_all("th")
-                ]
-
-            except Exception as e:
-                logging.error(f"Failed to parse table for {curr_pageurl}: {e}")
-                continue
-
-            headings = heading_mapper(headings, title_mapping)
-
-            chunk = [
-                [i.text.strip() for i in row.find_all("td")]
-                for row in rows]
-            # print(headings, chunk[0])
-            bulk = [
-                {
-                    head: item for head, item in zip(
-                        headings,
-                        row
-                    )
-                } for row in chunk]
-
-            # hockey_team_bulk = [
-
-            # ]
-            # print(bulk[0])
-            HockeyTeams.objects.bulk_create(
-                HockeyTeams(
-                    **team
-                ) for team in bulk
-            )
-
-            sleep(5)
+            hockey_single_scraper(page_url, title_mapping)
 
     except HTTPError as e:
         logging.error(f"Error in making request : {e.errno}")
@@ -156,45 +103,7 @@ def oscar_scraper():
         # iterating through every urls from pagination
         for year in paginated_years:
 
-            curr_pageurl = base_url + page_url
-
-            params = {
-                "ajax": "true",
-                "year": year,
-            }
-
-            # using "make_request" it to log the errors but not fail completely
-            page_to_scrape = make_request(
-                curr_pageurl,
-                params=params
-            )
-
-            try:
-                scraped_data = page_to_scrape.json()
-
-                # since the data is json format with key-value pair similar to ORM, this isn't required currently
-                # but just in case
-
-                # scraped_data = [
-                #     {
-                #         title_mapping[i]:j for i,j in entry.items() if i in title_mapping
-                #     } for entry in scraped_data
-                # ]
-
-                # print("bado badi")
-
-                OscarFilms.objects.bulk_create(
-                    OscarFilms(
-                        **entry
-                    ) for entry in scraped_data
-                )
-
-                sleep(5)
-                break
-
-            except JSONDecodeError:
-                logging.error(
-                    f"Failed to parse JSON response for {page_url} : params {params}")
+            single_oscar_page_scraper(page_url, year)            
 
     except HTTPError as e:
         logging.error(f"Error in making request : {e.errno}")
